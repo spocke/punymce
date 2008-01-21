@@ -30,7 +30,7 @@
 	<p>Textarea converted into editor with all plugins enabled including the BBCode plugin.</p>
 
 	<textarea id="content2" name="content2" style="width:320px;height:70px">
-		Some basic &lt;strong&gt;contents&lt;/strong&gt;. :) ;)
+		Some basic &lt;strong&gt;contents&lt;/strong&gt;. :) ;)<script>fsdfsd</script>
 	</textarea>
 
 	<div>
@@ -76,19 +76,13 @@ var editor1 = new punymce.Editor({
 });
 
 var editor2 = new punymce.Editor({
-	id : 'content2',
-	toolbar : 'bold,italic,underline,strike,increasefontsize,decreasefontsize,ul,ol,indent,outdent,left,center,right,style,textcolor,removeformat,link,unlink,image,emoticons,editsource',
-	plugins : 'BBCode,Paste,Image,Emoticons,Link,Protect,TextColor,EditSource,Safari2x',
-	min_width : 400,
-	entities : 'numeric',
-	styles : [
-		{ title : 'Code', cls : 'pre', cmd : 'FormatBlock', val : '<pre>' },
-		{ title : 'Quote', cls : 'quote', cmd : 'mceSetClass', val : 'quote'},
-		{ title : 'Unquote', cls : 'quote', cmd : 'mceSetClass', val : ''}
-	],
-	emoticons : {
-		auto_convert : 1
-	}
+    id : 'content2',
+    plugins : 'Protect',
+    protect : {
+        list : [
+            /<(script|noscript|style)[\u0000-\uFFFF]*?<\/(script|noscript|style)>/g
+        ]
+    }
 });
 </script>
 

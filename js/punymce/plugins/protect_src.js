@@ -1,17 +1,17 @@
 punymce.plugins.Protect = function(ed) {
-	var pr = [], s;
+	var pr = [], s, p;
 
 	// Default settings
-	s = ed.settings;
-	if (!s.protect) {
-		s.protect = [
+	p = ed.settings.protect || {};
+	if (!p.list) {
+		p.list = [
 			/<(script|noscript|style)[\u0000-\uFFFF]*?<\/(script|noscript|style)>/g
 		];
 	}
 
 	// Store away things to protect
 	ed.onSetContent.add(function(ed, o) {
-		punymce.each(s.protect, function(re) {
+		punymce.each(p.list, function(re) {
 			o.content = o.content.replace(re, function(a) {
 				pr.push(a);
 				return '<!-- pro:' + (pr.length-1) + ' -->';
