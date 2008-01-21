@@ -1,0 +1,25 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PunyMCE example</title>
+</head>
+<body>
+
+<h3>Simple example</h3>
+
+<form method="post" action="http://tinymce.moxiecode.com/dump.php?example=true">
+	<p>Simple editor with default toolbar.</p>
+
+	<textarea id="content1" name="content1" style="width:320px;height:70px">
+		Some basic &lt;strong&gt;contents&lt;/strong&gt;.
+	</textarea>
+</form>
+
+<!-- Load PunyMCE and setup basic editor -->
+<script type="text/javascript" src="../js/punymce/puny_mce.js"></script>
+<script type="text/javascript">
+var editor1 = new punymce.Editor({id : 'content1'});
+</script>
+
+</body>
+</html>

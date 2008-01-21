@@ -1,0 +1,96 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PunyMCE example</title>
+</head>
+<body>
+
+<h3>Full featured example</h3>
+
+<form method="post" action="http://tinymce.moxiecode.com/dump.php?example=true">
+	<p>Textarea converted into editor with all plugins enabled except the BBCode plugin. Notice the emoticons appear when you type ":)".</p>
+
+	<textarea id="content1" name="content1" style="width:320px;height:70px">
+		Some basic &lt;strong&gt;contents&lt;/strong&gt;. :)
+	</textarea>
+
+	<div>
+		<a href="#" onmousedown="editor1.show();return false;">[Show]</a>
+		<a href="#" onmousedown="editor1.hide();return false;">[Hide]</a>
+		<a href="#" onmousedown="alert(editor1.getContent({save : true}));return false;">[Get content]</a>
+		<a href="#" onmousedown="alert(editor1.selection.getContent());return false;">[Get selected HTML]</a>
+		<a href="#" onmousedown="alert(editor1.selection.getText());return false;">[Get selected text]</a>
+		<a href="#" onmousedown="alert(editor1.selection.getNode().nodeName);return false;">[Get focus element]</a>
+		<a href="#" onmousedown="editor1.selection.select(editor1.selection.getNode());return false;">[Select focus element]</a>
+		<a href="#" onmousedown="editor1.selection.setContent('abc<strong>123</strong>abc');return false;">[Insert content]</a>
+		<a href="#" onmousedown="editor1.resizeTo(640, 480);return false;">[Resize to]</a>
+		<a href="#" onmousedown="editor1.resizeBy(10, 10);return false;">[Resize by]</a>
+	</div>
+
+	<p>Textarea converted into editor with all plugins enabled including the BBCode plugin.</p>
+
+	<textarea id="content2" name="content2" style="width:320px;height:70px">
+		Some basic &lt;strong&gt;contents&lt;/strong&gt;. :) ;)
+	</textarea>
+
+	<div>
+		<a href="#" onmousedown="editor2.show();return false;">[Show]</a>
+		<a href="#" onmousedown="editor2.hide();return false;">[Hide]</a>
+		<a href="#" onmousedown="alert(editor2.getContent({save : true}));return false;">[Get content]</a>
+		<a href="#" onmousedown="alert(editor2.selection.getContent({format : 'bbcode'}));return false;">[Get selected BBCode]</a>
+		<a href="#" onmousedown="alert(editor2.selection.getContent());return false;">[Get selected HTML]</a>
+		<a href="#" onmousedown="alert(editor2.selection.getText());return false;">[Get selected text]</a>
+		<a href="#" onmousedown="alert(editor2.selection.getNode().nodeName);return false;">[Get focus element]</a>
+		<a href="#" onmousedown="editor2.selection.select(editor2.selection.getNode());return false;">[Select focus element]</a>
+		<a href="#" onmousedown="editor2.selection.setContent('abc<strong>123</strong>abc');return false;">[Insert content]</a>
+		<a href="#" onmousedown="editor2.resizeTo(640, 480);return false;">[Resize to]</a>
+		<a href="#" onmousedown="editor2.resizeBy(10, 10);return false;">[Resize by]</a>
+	</div>
+</form>
+
+<!-- Load PunyMCE and all plugins -->
+<script type="text/javascript" src="../js/punymce/puny_mce.js"></script>
+<script type="text/javascript" src="../js/punymce/plugins/textcolor/textcolor.js"></script>
+<script type="text/javascript" src="../js/punymce/plugins/paste.js"></script>
+<script type="text/javascript" src="../js/punymce/plugins/image/image.js"></script>
+<script type="text/javascript" src="../js/punymce/plugins/link/link.js"></script>
+<script type="text/javascript" src="../js/punymce/plugins/emoticons/emoticons.js"></script>
+<script type="text/javascript" src="../js/punymce/plugins/editsource/editsource.js"></script>
+<script type="text/javascript" src="../js/punymce/plugins/forceblocks.js"></script>
+<script type="text/javascript" src="../js/punymce/plugins/bbcode.js"></script>
+<script type="text/javascript" src="../js/punymce/plugins/entities.js"></script>
+<script type="text/javascript" src="../js/punymce/plugins/protect.js"></script>
+<script type="text/javascript" src="../js/punymce/plugins/safari2x.js"></script>
+
+<!-- Optional language pack -->
+<!-- <script type="text/javascript" src="../js/punymce/i18n/sv.js"></script> -->
+
+<!-- Setup the two editor instances -->
+<script type="text/javascript">
+var editor1 = new punymce.Editor({
+	id : 'content1',
+	toolbar : 'bold,italic,underline,strike,increasefontsize,decreasefontsize,ul,ol,indent,outdent,left,center,right,style,textcolor,removeformat,link,unlink,image,emoticons,editsource',
+	plugins : 'Paste,Image,Emoticons,Link,ForceBlocks,Protect,TextColor,EditSource,Safari2x',
+	min_width : 400,
+	entities : 'numeric'
+});
+
+var editor2 = new punymce.Editor({
+	id : 'content2',
+	toolbar : 'bold,italic,underline,strike,increasefontsize,decreasefontsize,ul,ol,indent,outdent,left,center,right,style,textcolor,removeformat,link,unlink,image,emoticons,editsource',
+	plugins : 'BBCode,Paste,Image,Emoticons,Link,Protect,TextColor,EditSource,Safari2x',
+	min_width : 400,
+	entities : 'numeric',
+	styles : [
+		{ title : 'Code', cls : 'pre', cmd : 'FormatBlock', val : '<pre>' },
+		{ title : 'Quote', cls : 'quote', cmd : 'mceSetClass', val : 'quote'},
+		{ title : 'Unquote', cls : 'quote', cmd : 'mceSetClass', val : ''}
+	],
+	emoticons : {
+		auto_convert : 1
+	}
+});
+</script>
+
+</body>
+</html>

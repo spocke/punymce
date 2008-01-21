@@ -1,0 +1,27 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>PunyMCE example</title>
+<!-- Load CSS -->
+<link rel="stylesheet" type="text/css" href="../js/punymce/css/editor.css" />
+</head>
+<body>
+
+<h3>Page CSS example</h3>
+
+<p>This example shows you how to use the page CSS instead of letting PunyMCE loads it's own UI css.</p>
+
+<form method="post" action="http://tinymce.moxiecode.com/dump.php?example=true">
+	<textarea id="content1" name="content1" style="width:320px;height:70px">
+		Some basic &lt;strong&gt;contents&lt;/strong&gt;.
+	</textarea>
+</form>
+
+<!-- Load PunyMCE but without CSS -->
+<script type="text/javascript" src="../js/punymce/puny_mce.js"></script>
+<script type="text/javascript">
+var editor1 = new punymce.Editor({id : 'content1', editor_css : ''});
+</script>
+
+</body>
+</html>
