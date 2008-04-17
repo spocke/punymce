@@ -6,13 +6,13 @@ punymce.extend(punymce.I18n, {
 	strike : 'Genomstruken',
 	ul : 'Punktlista',
 	ol : 'Nummerlista',
-	indent : 'Indrag',
+	indent : 'Öka indrag',
 	outdent : 'Minska indrag',
-	left : 'Vänster justera',
-	center : 'Center justera',
-	right : 'Höger justera',
-	style : 'Text stil',
-	removeformat : 'Tabort formattering',
+	left : 'Vänsterjustera',
+	center : 'Centerjustera',
+	right : 'Högerjustera',
+	style : 'Textstil',
+	removeformat : 'Ta bort formatering',
 
 	// Image plugin
 	insertimage : 'Infoga bild',
@@ -20,9 +20,9 @@ punymce.extend(punymce.I18n, {
 
 	// Link plugin
 	link : 'Skapa länk',
-	unlink : 'Tabort länk',
+	unlink : 'Ta bort länk',
 	enterhref : 'Skriv in URL:en till länken',
 
 	// Textcolor plugin
-	textcolor : 'Text färg'
+	textcolor : 'Textfärg'
 });

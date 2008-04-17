@@ -539,6 +539,7 @@ new function() {
 			max_height : 600,
 			entities : 'raw',
 			spellcheck : 0,
+			resize : true,
 			plugins : '',
 
 			styles : [
@@ -932,7 +933,12 @@ new function() {
 
 				// Setup UI table, could not use DOM since IE couldn't add the table this method is smaller in size anyway
 				ht = '<div id="' + s.id + '_w" class="punymce"><table id="' + s.id + '_c" class="punymce"><tr class="toolbar">';
-				ht += '<td id="' + s.id + '_t"></td></tr><tr class="body"><td></div><div id="' + s.id + '_b" class="body"><div id="' + s.id + '_r" class="resize"></div></td></tr></table>';
+				ht += '<td id="' + s.id + '_t"></td></tr><tr class="body"><td></div><div id="' + s.id + '_b" class="body">';
+
+				if (s.resize)
+					ht += '<div id="' + s.id + '_r" class="resize"></div>';
+	
+				ht += '</td></tr></table>';
 				ht += '<div id="' + s.id + '_p" class="placeholder"></div></div>';
 
 				if (!e.insertAdjacentHTML) {
@@ -981,9 +987,11 @@ new function() {
 					setup();
 
 				// Add resize event
-				Event.add(s.id + '_r', 'mousedown', function(e) {
-					return startResize(e, s.id);
-				}, this);
+				if (s.resize) {
+					Event.add(s.id + '_r', 'mousedown', function(e) {
+						return startResize(e, s.id);
+					}, this);
+				}
 
 				ul = f = e = n = null; // Prevent IE memory leak
 			},
