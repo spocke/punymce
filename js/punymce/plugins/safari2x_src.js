@@ -45,7 +45,7 @@ punymce.plugins.Safari2x = function(ed) {
 			setContent.call(this, h, s);
 		} catch (ex) {
 			// Workaround for Safari 2.x
-			b = ed.DOM.create('body');
+			b = ed.dom.create('body');
 			b.innerHTML = h;
 
 			each(b.childNodes, function(n) {
@@ -80,7 +80,7 @@ punymce.plugins.Safari2x = function(ed) {
 			var s = ed.selection, n, o, r, c;
 
 			if (e.charCode > 32 || e.keyCode == 13) {
-				n = ed.DOM.getParent(s.getNode(), function(n) {return n.nodeName == 'LI';});
+				n = ed.dom.getParent(s.getNode(), function(n) {return n.nodeName == 'LI';});
 
 				if (n) {
 					o = s.getRng().startOffset;
@@ -91,7 +91,7 @@ punymce.plugins.Safari2x = function(ed) {
 						if (!n.hasChildNodes()) {
 							// At end of list then use default behavior
 							if (!n.nextSibling || n.nextSibling.nodeName != 'LI') {
-								r = ed.DOM.getParent(s.getNode(), function(n) {return /(UL|OL)/.test(n.nodeName);});
+								r = ed.dom.getParent(s.getNode(), function(n) {return /(UL|OL)/.test(n.nodeName);});
 								n.parentNode.removeChild(n);
 								s.select(r.nextSibling);
 								return;
@@ -145,7 +145,7 @@ punymce.plugins.Safari2x = function(ed) {
 
 		d.execCommand('FontName', false, '_tmp');
 
-		each(ed.DOM.select('span'), function(e) {
+		each(ed.dom.select('span'), function(e) {
 			if (e.style.fontFamily == '_tmp') {
 				r = rename(e, n, a);
 
@@ -163,7 +163,7 @@ punymce.plugins.Safari2x = function(ed) {
 		var s = ed.selection, li;
 
 		s.setContent('<' + n + '><li id="_tmp"></li></' + n + '>');
-		li = ed.DOM.get('_tmp');
+		li = ed.dom.get('_tmp');
 		li.id = '';
 
 		s.select(li);
@@ -171,7 +171,7 @@ punymce.plugins.Safari2x = function(ed) {
 	};
 
 	function getParentBlock(n) {
-		return ed.DOM.getParent(n, function(n) {
+		return ed.dom.getParent(n, function(n) {
 			return /^(H[1-6]|P|DIV|ADDRESS|PRE|FORM|TABLE|LI|OL|UL|TD|CODE|CAPTION|BLOCKQUOTE|CENTER|DL|DT|DD|DIR|FIELDSET|NOSCRIPT|NOFRAMES|MENU|ISINDEX|SAMP)$/.test(n.nodeName);
 		});
 	};

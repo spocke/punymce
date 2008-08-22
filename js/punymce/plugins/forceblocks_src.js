@@ -29,7 +29,7 @@ punymce.plugins.ForceBlocks = function(ed) {
 	});
 
 	function setup() {
-		DOM = ed.DOM;
+		DOM = ed.dom;
 
 		// Force root blocks when typing and when getting output
 		Event.add(ed.getDoc(), 'keyup', forceRoots);
@@ -56,7 +56,7 @@ punymce.plugins.ForceBlocks = function(ed) {
 			if (isGecko) {
 				Event.add(ed.getDoc(), 'keydown', function(e) {
 					if ((e.keyCode == 8 || e.keyCode == 46) && !e.shiftKey)
-						backspaceDelete(e);
+						backspaceDelete(e, e.keyCode == 8);
 				});
 			}
 		}
@@ -100,7 +100,7 @@ punymce.plugins.ForceBlocks = function(ed) {
 								eo = r.endOffset;
 								si = find(b, 0, r.startContainer);
 								ei = find(b, 0, r.endContainer);
-							} else {
+							} else if (r.duplicate) {
 								tr = b.createTextRange();
 								tr.moveToElementText(b);
 								tr.collapse(1);
@@ -340,30 +340,62 @@ punymce.plugins.ForceBlocks = function(ed) {
 		return false;
 	};
 
-	function backspaceDelete(e) {
-		var b = ed.getBody(), n, se = ed.selection, r = se.getRng(), s = se.getSel();
+	function backspaceDelete(e, bs) {
+		var b = ed.getBody(), n, se = ed.selection, r = se.getRng(), sc = r.startContainer, n, w, tn;
 
+		// The caret sometimes gets stuck in Gecko if you delete empty paragraphs
+		// This workaround removes the element by hand and moves the caret to the previous element
+		if (sc && isBlock(sc) && !/^(TD|TH)$/.test(sc.nodeName) && bs) {
+			if (sc.childNodes.length == 0 || (sc.childNodes.length == 1 && sc.firstChild.nodeName == 'BR')) {
+				// Find previous block element
+				n = sc;
+				while ((n = n.previousSibling) && !isBlock(n)) ;
+
+				if (n) {
+					if (sc != b.firstChild) {
+						// Find last text node
+						w = ed.getDoc().createTreeWalker(n, NodeFilter.SHOW_TEXT, null, false);
+						while (tn = w.nextNode())
+							n = tn;
+
+						// Place caret at the end of last text node
+						r = ed.getDoc().createRange();
+						r.setStart(n, n.nodeValue ? n.nodeValue.length : 0);
+						r.setEnd(n, n.nodeValue ? n.nodeValue.length : 0);
+						se.getSel().removeAllRanges();
+						se.getSel().addRange(r);
+
+						// Remove the target container
+						sc.parentNode.removeChild(sc);
+					}
+
+					return Event.cancel(e);
+				}
+			}
+		}
+
+		// Gecko generates BR elements here and there, we don't like those so lets remove them
 		function handler(e) {
+			var pr;
+
 			e = e.target;
 
 			// A new BR was created in a block element, remove it
-			if (e && e.parentNode && e.nodeName == 'BR' && getParentBlock(e)) {
-				e.parentNode.removeChild(e);
+			if (e && e.parentNode && e.nodeName == 'BR' && (n = getParentBlock(e))) {
+				pr = e.previousSibling;
+
 				Event.remove(b, 'DOMNodeInserted', handler);
+
+				// Is there whitespace at the end of the node before then we might need the pesky BR
+				// to place the caret at a correct location see bug: #2013943
+				if (pr && pr.nodeType == 3 && /\s+$/.test(pr.nodeValue))
+					return;
+
+				// Only remove BR elements that got inserted in the middle of the text
+				if (e.previousSibling || e.nextSibling)
+					e.parentNode.removeChild(e);
 			}
 		};
-
-		// Move selection into text if selection is on element
-		if (r.collapsed && r.startContainer.nodeType != 3) {
-			// Find first text node
-			n = ed.getDoc().createTreeWalker(r.startContainer, 4, null, false).nextNode();
-
-			// Move cursor to start of text node
-			if (n) {
-				se.select(n, 1);
-				se.collapse(1);
-			}
-		}
 
 		// Listen for new nodes
 		Event._add(b, 'DOMNodeInserted', handler);

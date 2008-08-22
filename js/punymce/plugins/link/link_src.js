@@ -9,7 +9,7 @@ punymce.plugins.Link = function(ed) {
 		mceInsertLink : function(u, v, e) {
 			var tx, f = ed.selection.getNode();
 
-			tx = prompt(I18n.enterhref, f.nodeName == "A" ? ed.DOM.getAttr(f, "href") : "");
+			tx = prompt(I18n.enterhref, f.nodeName == "A" ? ed.dom.getAttr(f, "href") : "");
 			if (tx)
 				ed.execCommand('CreateLink', 0, tx);
 		}

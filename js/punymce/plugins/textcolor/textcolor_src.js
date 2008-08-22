@@ -11,7 +11,7 @@ punymce.plugins.TextColor = function(ed) {
 
 	extend(ed.commands, {
 		mceColor : function(u, v, e) {
-			var n, t = this, id = s.id, p = DOM.getPos(e.target), co, cb;
+			var n, t = this, id = ed.settings.id, p = DOM.getPos(e.target), co, cb;
 
 			if (ed.hideMenu)
 				return ed.hideMenu();

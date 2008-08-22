@@ -9,9 +9,9 @@ punymce.plugins.Image = function(ed) {
 		mceInsertImage : function(u, v, e) {
 			var tx, f = ed.selection.getNode();
 
-			tx = prompt(I18n.entersrc, f.nodeName == "IMG" ? ed.DOM.getAttr(f, "src") : "");
+			tx = prompt(I18n.entersrc, f.nodeName == "IMG" ? ed.dom.getAttr(f, "src") : "");
 			if (tx)
-				ed.selection.setNode(ed.DOM.create('img', {src : tx}));
+				ed.selection.setNode(ed.dom.create('img', {src : tx}));
 		}
 	});
 

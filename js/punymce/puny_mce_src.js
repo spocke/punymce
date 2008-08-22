@@ -1,6 +1,6 @@
 var punymce = {};
 
-new function() {
+(function() {
 	var DOMUtils, Engine, Control, Editor, Selection, Dispatcher, Event, Serializer, I18n; // Shorten class names
 	var pageDOM, isIE, isGecko, isOpera, isWebKit, isOldWebKit, ua; // Global objects
 
@@ -177,7 +177,7 @@ new function() {
 				}
 
 				// Remove Apple and WebKit stuff
-				if (isWebKit && n == "class")
+				if (isWebKit && n == "class" && v)
 					v = v.replace(/(apple|webkit)\-[a-z\-]+/gi, '');
 
 				return (v && v != "") ? '' + v : dv;
@@ -629,13 +629,13 @@ new function() {
 			},
 
 			CreateLink : function(u, v) {
-				var k = 'javascript:mox();';
+				var dom = t.dom, k = 'javascript:mox();';
 
 				t.getDoc().execCommand("CreateLink", 0, k);
-				each(t.DOM.select('A'), function(n) {
-					if (t.DOM.getAttr(n, 'href') == k) {
-						t.DOM.setAttr(n, 'href', v);
-						t.DOM.setAttr(n, 'mce_href', v);
+				each(dom.select('A'), function(n) {
+					if (dom.getAttr(n, 'href') == k) {
+						dom.setAttr(n, 'href', v);
+						dom.setAttr(n, 'mce_href', v);
 					}
 				});
 			},
@@ -696,7 +696,7 @@ new function() {
 
 				if (isIE) {
 					// IE adds strange ltr and margin right when making a blockquote
-					t.DOM.getParent(t.selection.getNode(), function(n) {
+					t.dom.getParent(t.selection.getNode(), function(n) {
 						if (n.nodeName == 'BLOCKQUOTE')
 							n.dir = n.style.marginRight = '';
 					});
@@ -715,7 +715,7 @@ new function() {
 				}
 
 				if (s.isCollapsed())
-					t.DOM.setAttr(s.getNode(), 'class', v['class']);
+					t.dom.setAttr(s.getNode(), 'class', v['class']);
 				else
 					s.setContent('<' + v.element + ' class="' + v['class'] + '">' + s.getContent() + '</' + v.element + '>');
 			},
@@ -822,7 +822,7 @@ new function() {
 			d.write('<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /></head><body id="punymce"></body></html>');
 			d.close();
 
-			t.DOM = DOM = new DOMUtils(t.getDoc());
+			t.dom = DOM = new DOMUtils(t.getDoc());
 			DOM.loadCSS(s.content_css);
 
 			t.onPreInit.dispatch(t);
@@ -932,14 +932,14 @@ new function() {
 				}
 
 				// Setup UI table, could not use DOM since IE couldn't add the table this method is smaller in size anyway
-				ht = '<div id="' + s.id + '_w" class="punymce"><table id="' + s.id + '_c" class="punymce"><tr class="toolbar">';
-				ht += '<td id="' + s.id + '_t"></td></tr><tr class="body"><td></div><div id="' + s.id + '_b" class="body">';
+				ht = '<div id="' + s.id + '_w" class="punymce"><table id="' + s.id + '_c" class="punymce"><tr class="mceToolbar">';
+				ht += '<td id="' + s.id + '_t"></td></tr><tr class="mceBody"><td></div><div id="' + s.id + '_b" class="mceBody">';
 
 				if (s.resize)
-					ht += '<div id="' + s.id + '_r" class="resize"></div>';
+					ht += '<div id="' + s.id + '_r" class="mceResize"></div>';
 	
 				ht += '</td></tr></table>';
-				ht += '<div id="' + s.id + '_p" class="placeholder"></div></div>';
+				ht += '<div id="' + s.id + '_p" class="mcePlaceholder"></div></div>';
 
 				if (!e.insertAdjacentHTML) {
 					r = e.ownerDocument.createRange();
@@ -1063,7 +1063,7 @@ new function() {
 			setUseCSS : function(s) {
 				var d = t.getDoc(), e;
 
-				if (isGecko && !t.useCSS) {
+				if (isGecko) {
 					try {
 						// Try new Gecko method
 						d.execCommand("styleWithCSS", 0, false);
@@ -1071,8 +1071,6 @@ new function() {
 						// Use old
 						d.execCommand("useCSS", 0, true);
 					}
-
-					t.useCSS = 1;
 				}
 			},
 
@@ -1080,7 +1078,7 @@ new function() {
 				var cl = t.commands, s;
 
 				t.getWin().focus();
-				t.setUseCSS(1);
+				t.setUseCSS(0);
 
 				if (cl[c])
 					s = cl[c].call(t, u, v, e);
@@ -1095,6 +1093,7 @@ new function() {
 				var h;
 
 				o = o || {};
+				o.format = o.format || 'html';
 				h = t.serializer.serialize(t.getBody(), o);
 				h = h.replace(/^\s*|\s*$/g, '');
 				o.content = h;
@@ -1138,6 +1137,7 @@ new function() {
 			},
 
 			nodeChanged : function() {
+				t.setUseCSS(0);
 				t.onNodeChange.dispatch(t, t.selection.getNode());
 			}
 		});
@@ -1197,7 +1197,7 @@ new function() {
 					o.content = h;
 					h = ed.onSetContent.dispatch(this, o);
 					h = o.content;
-					b = ed.DOM.create('body');
+					b = ed.dom.create('body');
 					b.innerHTML = h;
 				}
 
@@ -1277,7 +1277,7 @@ new function() {
 			},
 
 			setNode : function(n) {
-				t.setContent(ed.DOM.create('div', null, n).innerHTML);
+				t.setContent(ed.dom.create('div', null, n).innerHTML);
 			},
 
 			getNode : function() {
@@ -1450,4 +1450,4 @@ new function() {
 
 	// Wait for DOM loaded
 	Event._wait();
-};
+})();

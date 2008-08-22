@@ -1,5 +1,5 @@
 punymce.plugins.Emoticons = function(ed) {
-	var Event = punymce.Event, each, extend, isIE, isGecko, st, emoReg, DOM;
+	var Event = punymce.Event, each, extend, isIE, isGecko, st, emoReg, DOM, h;
 
 	each = punymce.each;
 	extend = punymce.extend;
@@ -79,7 +79,7 @@ punymce.plugins.Emoticons = function(ed) {
 					Event.add(DOM.add(DOM.add(r, 'td'), 'a', {href : '#', 'class' : 'emoticon ' + k}), 'mousedown', function(e) {
 						hide.call(t);
 
-						ed.selection.setNode(ed.DOM.create('img', { title : c[0] || k, src : st.trans_img, 'class' : 'emoticon ' + k }));
+						ed.selection.setNode(ed.dom.create('img', { title : c[0] || k, src : st.trans_img, 'class' : 'emoticon ' + k }));
 
 						return Event.cancel(e);
 					});
@@ -122,7 +122,7 @@ punymce.plugins.Emoticons = function(ed) {
 		});
 
 		each(a, function(n) {
-			var c = n.getAttribute('class');
+			var c = ed.dom.getAttr(n, 'class');
 
 			if (c && c.indexOf('emoticon') != -1) {
 				n.parentNode.replaceChild(ed.getDoc().createTextNode(n.getAttribute('title')), n);
@@ -161,7 +161,7 @@ punymce.plugins.Emoticons = function(ed) {
 	});
 
 	ed.onInit.add(function() {
-		var DOM = ed.DOM;
+		var DOM = ed.dom;
 
 		if (!st.skip_css)
 			DOM.loadCSS(punymce.baseURL + '/plugins/emoticons/css/content.css');
