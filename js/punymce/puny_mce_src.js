@@ -913,18 +913,18 @@ var punymce = {};
 					f = e.form;
 
 					// Piggy back
-					f._submit = f.submit;
+					t._submit = f.submit;
 					f.submit = function() {
 						var e = pageDOM.get(s.id), f = e.form;
 						t.save();
-						f.submit = f._submit;
+						f.submit = t._submit;
 						f.submit();
 					};
 
 					// Prevent IE from memory leaking
 					Event.add(0, 'unload', function() {
 						var f = pageDOM.get(s.id).form;
-						f._submit = f.submit = null;
+						t._submit = t.submit = null;
 					});
 
 					// Submit event

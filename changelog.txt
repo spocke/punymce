@@ -1,3 +1,5 @@
+Version 1.0.1 (2008-xx-xx)
+	Fixed bug where it was impossible to submit two editor instances using form.submit.
 Version 1.0 (2008-08-22)
 	Fixed bug where the entity encoding plugin wasn't working correctly.
 	Fixed bug where the emoticons would not get converted from images properly on IE.
