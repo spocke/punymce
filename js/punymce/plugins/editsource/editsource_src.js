@@ -5,6 +5,11 @@ punymce.plugins.EditSource = function(ed) {
 	if (!ed.settings.editsource || ed.settings.editsource.skip_css)
 		DOM.loadCSS(punymce.baseURL + '/plugins/editsource/css/editor.css');
 
+	ed.onBeforeGetContent.add(function(ed, o) {
+		if (o.save && sourceView)
+			ed.setContent(DOM.get(ed.settings.id + '_editsourcearea').value, {load : true});
+	});
+
 	// Add commands
 	extend(ed.commands, {
 		mceEditSource : function(u, v, e) {

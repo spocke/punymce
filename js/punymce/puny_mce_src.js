@@ -867,7 +867,7 @@ var punymce = {};
 		});
 
 		// Add events
-		each(['onPreInit', 'onInit', 'onFocus', 'onBlur', 'onResizeStart', 'onResizeEnd', 'onPreProcess', 'onPostProcess', 'onSetContent', 'onGetContent', 'onNodeChange'], function(e) {
+		each(['onPreInit', 'onInit', 'onFocus', 'onBlur', 'onResizeStart', 'onResizeEnd', 'onPreProcess', 'onPostProcess', 'onSetContent', 'onBeforeGetContent', 'onGetContent', 'onNodeChange'], function(e) {
 			t[e] = new Dispatcher(t);
 		});
 
@@ -1094,6 +1094,7 @@ var punymce = {};
 
 				o = o || {};
 				o.format = o.format || 'html';
+				t.onBeforeGetContent.dispatch(this, o);
 				h = t.serializer.serialize(t.getBody(), o);
 				h = h.replace(/^\s*|\s*$/g, '');
 				o.content = h;
