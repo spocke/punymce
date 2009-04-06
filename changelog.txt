@@ -1,7 +1,15 @@
-Version 1.0.1 (2008-xx-xx)
+Version 1.0.1 (2009-xx-xx)
 	Added new onBeforeGetContent event handler object.
+	Added new tabfocus plugin, this enables you to tab to/from editor using the keyboard.
+	Added new build process so it uses the YUI Compressor and Apache Ant.
+	Added new logic to the paste plugin to remove all formatting to avoid issues with MS Word or other sources.
+	Fixed bug where selecting all contents didn't work the first time due to a bug in the forceblocks plugin.
+	Fixed bug where selection.setContent didn't place the caret after the inserted contents.
+	Fixed bug where the dom.getPos method didn't return correct values on FF.
+	Fixed bug where the editor would scroll the entire page to top if you pressed return/enter.
 	Fixed bug where it was impossible to submit two editor instances using form.submit.
 	Fixed bug where contents wouldn't be submitted while in source view.
+	Fixed bug where http:// and ftp:// could be converted into emoticons.
 Version 1.0 (2008-08-22)
 	Fixed bug where the entity encoding plugin wasn't working correctly.
 	Fixed bug where the emoticons would not get converted from images properly on IE.
