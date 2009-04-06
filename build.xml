@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="PunyMCE" default="build" basedir=".">
+	<!-- Path properties -->
+	<property description="Export directory" name="export_dir" value="export" />
+
+	<!-- Setup classpath for js-build-tools ant tasks -->
+	<path id="tasks.classpath">
+		<pathelement location="."/>
+
+		<fileset dir="tools\ant">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+
+	<!-- Register new js-build-tools ant tasks -->
+	<taskdef name="preprocess" classname="com.moxiecode.ant.tasks.PreProcessTask" classpathref="tasks.classpath" loaderref="tasks.classpath.loader" />
+	<taskdef name="yuicompress" classname="com.moxiecode.ant.tasks.YuiCompressTask" classpathref="tasks.classpath" loaderref="tasks.classpath.loader" />
+	<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="tasks.classpath" loaderref="tasks.classpath.loader" /> 
+	<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="tasks.classpath" loaderref="tasks.classpath.loader" />
+
+	<target name="build">
+		<!-- Concat multuple JS files together -->
+		<concat destfile="js/punymce/puny_mce.full.tmp.js">
+			<fileset dir="js" includes="punymce/puny_mce_src.js" />
+			<fileset dir="js" includes="punymce/plugins/forceblocks_src.js" />
+			<fileset dir="js" includes="punymce/plugins/emoticons/emoticons_src.js" />
+			<fileset dir="js" includes="punymce/plugins/editsource/editsource_src.js" />
+			<fileset dir="js" includes="punymce/plugins/image/image_src.js" />
+			<fileset dir="js" includes="punymce/plugins/link/link_src.js" />
+			<fileset dir="js" includes="punymce/plugins/textcolor/textcolor_src.js" />
+			<fileset dir="js" includes="punymce/plugins/paste_src.js" />
+			<fileset dir="js" includes="punymce/plugins/bbcode_src.js" />
+			<fileset dir="js" includes="punymce/plugins/entities_src.js" />
+			<fileset dir="js" includes="punymce/plugins/protect_src.js" />
+			<fileset dir="js" includes="punymce/plugins/tabfocus_src.js" />
+			<fileset dir="js" includes="punymce/plugins/safari2x_src.js" />
+		</concat>
+
+		<!-- Compress PunyMCE full and base using the YUI Compressor -->
+		<yuicompress infile="js/punymce/puny_mce.full.tmp.js" outfile="js/punymce/puny_mce_full.js" />
+		<yuicompress infile="js/punymce/puny_mce_src.js" outfile="js/punymce/puny_mce.js" />
+
+		<!-- Compress all PunyMCE plugins using the YUI Compressor -->
+		<yuicompress infile="js/punymce/plugins/forceblocks_src.js" outfile="js/punymce/plugins/forceblocks.js" />
+		<yuicompress infile="js/punymce/plugins/emoticons/emoticons_src.js" outfile="js/punymce/plugins/emoticons/emoticons.js" />
+		<yuicompress infile="js/punymce/plugins/editsource/editsource_src.js" outfile="js/punymce/plugins/editsource/editsource.js" />
+		<yuicompress infile="js/punymce/plugins/image/image_src.js" outfile="js/punymce/plugins/image/image.js" />
+		<yuicompress infile="js/punymce/plugins/link/link_src.js" outfile="js/punymce/plugins/link/link.js" />
+		<yuicompress infile="js/punymce/plugins/textcolor/textcolor_src.js" outfile="js/punymce/plugins/textcolor/textcolor.js" />
+		<yuicompress infile="js/punymce/plugins/paste_src.js" outfile="js/punymce/plugins/paste.js" />
+		<yuicompress infile="js/punymce/plugins/bbcode_src.js" outfile="js/punymce/plugins/bbcode.js" />
+		<yuicompress infile="js/punymce/plugins/entities_src.js" outfile="js/punymce/plugins/entities.js" />
+		<yuicompress infile="js/punymce/plugins/protect_src.js" outfile="js/punymce/plugins/protect.js" />
+		<yuicompress infile="js/punymce/plugins/tabfocus_src.js" outfile="js/punymce/plugins/tabfocus.js" />
+		<yuicompress infile="js/punymce/plugins/safari2x_src.js" outfile="js/punymce/plugins/safari2x.js" />
+
+		<delete file="js/punymce/puny_mce.full.tmp.js" quiet="true" />
+	</target>
+
+	<target name="release">
+		<!-- Export -->
+		<delete dir="${export_dir}/punymce" quiet="true" />
+
+		<svn javahl="${javahl}">
+			<export srcUrl="http://punymce.googlecode.com/svn/trunk/" destPath="${export_dir}/punymce" />
+		</svn>
+
+		<!-- Parse minor version, major version and release date from changelog -->
+		<loadfile property="changelog" srcFile="${export_dir}/punymce/changelog.txt" />
+		<propertyregex property="version" input="${changelog}" regexp="^Version ([0-9xabrc.]+)" select="\1" />
+		<propertyregex property="release_date" input="${changelog}" regexp="^Version [^\(]+\(([^\)]+)\)" select="\1" />
+		<propertyregex property="file_version" input="${version}" regexp="\." replace="_" />
+
+		<!-- Compress production package -->
+		<delete file="${export_dir}/punymce_${file_version}.zip" quiet="true" />
+		<zip destfile="${export_dir}/punymce_${file_version}.zip">
+			<fileset dir="${export_dir}/punymce">
+				<include name="*/**" />
+				<exclude name="tools/**" />
+				<exclude name="build.xml" />
+				<exclude name="build.bat" />
+			</fileset>
+		</zip>
+
+		<!-- Compress dev package -->
+		<delete file="${export_dir}/punymce_${file_version}_dev.zip" quiet="true" />
+		<zip destfile="${export_dir}/punymce_${file_version}_dev.zip">
+			<fileset dir="${export_dir}/punymce">
+				<include name="*/**" />
+			</fileset>
+		</zip>
+	</target>
+</project>

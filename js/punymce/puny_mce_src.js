@@ -1,6 +1,4 @@
-var punymce = {};
-
-(function() {
+(function(punymce) {
 	var DOMUtils, Engine, Control, Editor, Selection, Dispatcher, Event, Serializer, I18n; // Shorten class names
 	var pageDOM, isIE, isGecko, isOpera, isWebKit, isOldWebKit, ua; // Global objects
 
@@ -205,7 +203,7 @@ var punymce = {};
 				n = this.get(n);
 
 				// IE specific method (less quirks in IE6)
-				if (n && n.getBoundingClientRect) {
+				if (punymce.isIE && n) {
 					r = n.getBoundingClientRect();
 					d = document;
 					n = d.compatMode == 'CSS1Compat' ? d.documentElement : d.body;
@@ -659,28 +657,6 @@ var punymce = {};
 					return;
 
 				d.execCommand('FontSize', false, cv + v);
-
-				if (isWebKit) {
-					sp = s.getNode();
-
-					if (sp.nodeName == 'SPAN') {
-						fo = sp.parentNode;
-
-						s.select(t.getBody());
-
-						each(sp.childNodes, function(c) {
-							sp.removeChild(c);
-							fo.appendChild(c.cloneNode(1));
-						});
-
-						fo.removeChild(sp);
-						cv = ['x-small', 'small', 'medium', 'large', 'x-large', 'xx-large', '-webkit-xxx-large'].indexOf(sp.style.fontSize);
-						if (cv > 0 && cv < 7)
-							fo.setAttribute('size', (cv + 1));
-
-						s.select(fo);
-					}
-				}
 			},
 
 			IncreaseFontSize : function() {
@@ -887,8 +863,12 @@ var punymce = {};
 					each(sta, function(n) {
 						var f;
 
-						f = t.getDoc().queryCommandState(t.tools[n].cmd) ? pageDOM.addClass : pageDOM.removeClass;
-						f.call(pageDOM, s.id + '_' + n, 'active');
+						try {
+							f = t.getDoc().queryCommandState(t.tools[n].cmd) ? pageDOM.addClass : pageDOM.removeClass;
+							f.call(pageDOM, s.id + '_' + n, 'active');
+						} catch (ex) {
+							// Might fail
+						}
 					});
 				});
 
@@ -955,7 +935,7 @@ var punymce = {};
 				each(s.toolbar.split(','), function(v) {
 					var to = t.tools[v];
 
-					n = pageDOM.add(pageDOM.add(ul, 'li', {id : s.id + '_' + v, 'class' : v}), 'a', {'href' : 'javascript:void(0);', 'class' : v, title : to.title, onmousedown : 'return false;'});
+					n = pageDOM.add(pageDOM.add(ul, 'li', {id : s.id + '_' + v, 'class' : v}), 'a', {'href' : 'javascript:void(0);', 'class' : v, title : to.title, tabIndex : -1, onmousedown : 'return false;'});
 
 					Event.add(n, 'click', function(e) {
 						if (!pageDOM.hasClass(e.target.parentNode, 'disabled'))
@@ -1063,13 +1043,15 @@ var punymce = {};
 			setUseCSS : function(s) {
 				var d = t.getDoc(), e;
 
-				if (isGecko) {
+				try {
+					// Try new Gecko method
+					d.execCommand("styleWithCSS", 0, false);
+				} catch (e) {
 					try {
-						// Try new Gecko method
-						d.execCommand("styleWithCSS", 0, false);
-					} catch (e) {
 						// Use old
 						d.execCommand("useCSS", 0, true);
+					} catch (e) {
+						// Ignore
 					}
 				}
 			},
@@ -1109,7 +1091,6 @@ var punymce = {};
 				t.onSetContent.dispatch(this, o);
 				h = o.content;
 				h = pageDOM.keep(h);
-
 
 				t.getBody().innerHTML = h;
 
@@ -1189,7 +1170,7 @@ var punymce = {};
 			},
 
 			setContent : function(h, o) {
-				var r = t.getRng(), b;
+				var r = t.getRng(), b, c, r, s;
 
 				o = o || {format : 'raw'};
 				h = pageDOM.keep(h);
@@ -1204,7 +1185,21 @@ var punymce = {};
 
 				if (r.insertNode) {
 					r.deleteContents();
-					r.insertNode(r.createContextualFragment(h));
+					r.insertNode(r.createContextualFragment(h + '<span id="__caret">_</span>'));
+
+					// Move to caret marker
+					c = ed.dom.get('__caret');
+
+					// Make sure we wrap it compleatly, Opera fails with a simple select call
+					r = ed.getDoc().createRange();
+					r.setStartBefore(c);
+					r.setEndBefore(c);
+					s = t.getSel();
+					s.removeAllRanges();
+					s.addRange(r);
+
+					// Remove the caret
+					c.parentNode.removeChild(c);
 				} else {
 					// Handle text and control range
 					if (r.pasteHTML)
@@ -1275,6 +1270,13 @@ var punymce = {};
 					// IE bug when used in frameset
 					return d.body.createTextRange();
 				}
+			},
+
+			setRng : function(r) {
+				var s = t.getSel();
+
+				s.removeAllRanges();
+				s.addRange(r);
 			},
 
 			setNode : function(n) {
@@ -1451,4 +1453,7 @@ var punymce = {};
 
 	// Wait for DOM loaded
 	Event._wait();
-})();
+
+	// Expose punymce
+	window.punymce = punymce;
+})({});
