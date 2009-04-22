@@ -15,13 +15,26 @@
 		return n;
 	};
 
+	function findTextNode(ed, n, first) {
+		// Find last text node
+		var tn, w = ed.getDoc().createTreeWalker(n, NodeFilter.SHOW_TEXT, null, false);
+
+		if (first)
+			return w.nextNode();
+
+		while (tn = w.nextNode())
+			n = tn;
+
+		return n;
+	};
+
 	punymce.plugins.Paste = function(ed) {
 		var dom = punymce.DOM, bookmark;
 
 		ed.onPaste = new punymce.Dispatcher(ed);
 
 		function insert(v) {
-			var lines, parents = [], block, caret, sel = ed.selection, start, end, i, rng;
+			var lines, parents = [], block, caret, sel = ed.selection, start, end, i, rng, marker;
 
 			ed.getWin().focus();
 
@@ -42,6 +55,7 @@
 
 				// Split current container
 				if (!punymce.isIE) {
+					ed.execCommand('Delete');
 					sel.setContent('<span id="marker"></span>');
 					block = ed.dom.getParent(ed.dom.get('marker').parentNode, function(n) {
 						parents.push(n);
@@ -76,6 +90,9 @@
 						ed.execCommand('Delete');
 
 						return;
+					} else {
+						marker = ed.dom.get('marker');
+						marker.parentNode.removeChild(marker);
 					}
 				}
 			}
@@ -85,15 +102,34 @@
 		};
 
 		function grab(e) {
-			var elm = insertAfter(dom.create('textarea', {id : 'punymce_paste', style : 'position:absolute;width:1px;height:1px'}), dom.get(ed.settings.id + '_c')), r, val;
+			var n, rng, sel = ed.selection, se = sel.getSel(), or, body = ed.getBody();
 
-			elm.focus();
+			n = ed.dom.add(body, 'div', {id : '_mcePaste', style : 'position:absolute;left:-10000px;top:' + body.scrollTop}, '&nbsp;');
 
-			setTimeout(function() {
-				// Grab contents from text area and insert it
-				val = elm.value;
-				elm.parentNode.removeChild(elm);
-				insert(val);
+			// Move caret into hidden div
+			or = sel.getRng();
+			n = n.firstChild;
+			rng = ed.getDoc().createRange();
+			rng.setStart(n, 0);
+			rng.setEnd(n, 1);
+
+			se.removeAllRanges();
+			se.addRange(rng);
+
+			window.setTimeout(function() {
+				var n = ed.dom.get('_mcePaste'), h;
+
+				// Grab the HTML contents
+				h = n.innerHTML;
+
+				// Remove hidden div and restore selection
+				n.parentNode.removeChild(n);
+
+				// Restore the old selection
+				if (or)
+					sel.setRng(or);
+
+				insert(h.replace(/[\r\n]/g, '').replace(/<(\/p|br\s*\/?)>/g, '\n').replace(/<!--.*?-->/g, '').replace(/<[^>]+>/g, ''));
 			}, 0);
 		};
 
@@ -101,21 +137,8 @@
 			if (punymce.isOpera)
 				return;
 
-			// WebKit allows us to access the clipboard contents
-			if (/WebKit/.test(navigator.userAgent) || punymce.isIE) {
-				Event.add(punymce.isIE ? ed.getBody() : ed.getDoc(), 'paste', function(e) {
-					var val;
-
-					if (ed.getWin().clipboardData)
-						val = ed.getWin().clipboardData.getData('Text');
-					else
-						val = e.clipboardData.getData('text/plain');
-
-					insert(val);
-
-					return Event.cancel(e);
-				});
-			} else {
+			// Use Ctrl+v handler on FF 2
+			if (/Firefox\/2/.test(navigator.userAgent)) {
 				Event.add(ed.getDoc(), 'keydown', function(e) {
 					// Fake onpaste event (ctrl+v or shift+insert)
 					if (((e.metaKey || e.ctrlKey) && e.keyCode == 86) || (e.shiftKey && e.keyCode == 45)) {
@@ -126,6 +149,20 @@
 						grab(e);
 					}
 				}, this);
+			} else {
+				Event.add(punymce.isIE ? ed.getBody() : ed.getDoc(), 'paste', function(e) {
+					var val;
+
+					if (ed.getWin().clipboardData) {
+						insert(ed.getWin().clipboardData.getData('Text'));
+						return Event.cancel(e);
+					} if (e.clipboardData) {
+						insert(e.clipboardData.getData('text/plain'));
+						return Event.cancel(e);
+					}
+
+					grab(e);
+				});
 			}
 		});
 	};
