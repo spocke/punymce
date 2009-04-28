@@ -134,8 +134,8 @@
 		ed.onSetContent.add(function(ed, o) {
 			var ar = [];
 
-			// Store away all tags
-			h = o.content.replace(/<\/?[^>]+>/g, function(a) {
+			// Store away all tags and URL parts (://)
+			h = o.content.replace(/(<\/?[^>]+>|:\/\/)/g, function(a) {
 				return a.replace(emoReg, function(a) {
 					var c = find(a);
 
