@@ -11,8 +11,12 @@
 				var tx, f = ed.selection.getNode();
 
 				tx = prompt(I18n.enterhref, f.nodeName == "A" ? ed.dom.getAttr(f, "href") : "");
-				if (tx)
-					ed.execCommand('CreateLink', 0, tx);
+				if (tx) {
+					if (ed.selection.isCollapsed())
+						ed.selection.setContent('<a href="' + tx + '">' + tx + '</a>');
+					else
+						ed.execCommand('CreateLink', 0, tx);
+				}
 			}
 		});
 
