@@ -15,8 +15,22 @@
 	<!-- Register new js-build-tools ant tasks -->
 	<taskdef name="preprocess" classname="com.moxiecode.ant.tasks.PreProcessTask" classpathref="tasks.classpath" loaderref="tasks.classpath.loader" />
 	<taskdef name="yuicompress" classname="com.moxiecode.ant.tasks.YuiCompressTask" classpathref="tasks.classpath" loaderref="tasks.classpath.loader" />
+	<taskdef name="moxiedoc" classname="com.moxiecode.ant.tasks.MoxieDocTask" classpathref="tasks.classpath" loaderref="tasks.classpath.loader" />
 	<typedef resource="org/tigris/subversion/svnant/svnantlib.xml" classpathref="tasks.classpath" loaderref="tasks.classpath.loader" /> 
 	<taskdef resource="net/sf/antcontrib/antcontrib.properties" classpathref="tasks.classpath" loaderref="tasks.classpath.loader" />
+
+	<!-- Generate JS documentation -->
+	<target name="moxiedoc" depends="" description="Generates HTML documentation out of js source">
+		<delete quiet="true">
+			<fileset dir="docs\api" includes="**/*"/>
+		</delete>
+
+		<moxiedoc outdir="docs\api" templatedir="tools\templates" msintellisense="docs\api\punymce.vsdoc.js" eventclass="punymce.Dispatcher" title="PunyMCE API">
+			<fileset dir="js\punymce">
+				<include name="**/puny_mce_src.js" /> 
+			</fileset>
+		</moxiedoc>
+	</target>
 
 	<target name="build">
 		<!-- Concat multuple JS files together -->
