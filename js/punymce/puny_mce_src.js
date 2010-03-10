@@ -1033,7 +1033,8 @@
 
 			save : function() {
 				var e = pageDOM.get(s.id), h = t.getContent({save : true});
-
+				// Fixed bug where empty boxes return '<html/>' as content
+				h = h.replace(/<(\/?)html(\/?)>/gi, "");
 				if (/TEXTAREA|INPUT/.test(e.nodeName))
 					e.value = h;
 				else
